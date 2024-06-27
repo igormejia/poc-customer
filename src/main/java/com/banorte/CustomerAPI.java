@@ -61,14 +61,14 @@ public class CustomerAPI {
     @GET
     @Blocking
     public Multi<Customer> list() {
-        return Multi.createFrom().iterable(pr.listCustomer());
+        return Multi.createFrom().iterable(pr.findAll());
     }
 
 
     @GET
     @Path("/{id}")
     public Uni<Customer> getById(@PathParam("id") Long id) {
-        return Uni.createFrom().item(() -> pr.findCustomer(id));
+        return Uni.createFrom().item(() -> pr.findById(id).orElse(new Customer()));
     }
 
     @GET
@@ -103,27 +103,27 @@ public class CustomerAPI {
     @Blocking
     public Uni<Response> add(Customer c) {
         c.getProducts().forEach(p -> p.setCustomer(c));
-        pr.createdCustomer(c);
+        pr.save(c);
         return Uni.createFrom().item(Response.ok().build());
     }
 
     @DELETE
     @Path("/{id}")
     public Uni<Response> delete(@QueryParam("id") Long id) {
-        Customer customer = pr.findCustomer(id);
-        pr.deleteCustomer(customer);
+        Customer customer = pr.findById(id).orElse(new Customer());
+        pr.delete(customer);
         return Uni.createFrom().item(Response.ok().build());
     }
     @PUT
     public Response update(Customer p) {
-        Customer customer = pr.findCustomer(p.getId());
+        Customer customer = pr.findById(p.getId()).orElse(new Customer());
         customer.setCode(p.getCode());
         customer.setAccountNumber(p.getAccountNumber());
         customer.setSurname(p.getSurname());
         customer.setPhone(p.getPhone());
         customer.setAddress(p.getAddress());
         customer.setProducts(p.getProducts());
-        pr.updateCustomer(customer);
+        pr.save(customer);
         return Response.ok().build();
     }
 
