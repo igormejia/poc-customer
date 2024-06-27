@@ -1,0 +1,4 @@
+com\banorte\CustomerAPI.class
+com\banorte\repository\CustomerRepository.class
+com\banorte\entity\Customer.class
+com\banorte\entity\Product.class
